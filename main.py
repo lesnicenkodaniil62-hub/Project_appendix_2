@@ -3,7 +3,7 @@ from src.product import Product
 from src.utils import load_data_from_json
 
 if __name__ == "__main__":
-
+    # === СТАРЫЙ КОД ===
     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
     product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
@@ -50,24 +50,44 @@ if __name__ == "__main__":
     print(Category.category_count)
     print(Category.product_count)
 
-    # === ЗАГРУЗКА ИЗ JSON ===
+    # === НОВЫЙ КОД ===
+    print("\n--- Новый функционал ---")
+
+    print(category1.products)
+    product5 = Product('55" QLED 4K', "Фоновая подсветка", 123000.0, 7)
+    category1.add_product(product5)
+    print(category1.products)
+    print(category1.product_count)
+
+    new_product = Product.new_product(
+        {
+            "name": "Samsung Galaxy S23 Ultra",
+            "description": "256GB, Серый цвет, 200MP камера",
+            "price": 180000.0,
+            "quantity": 5,
+        }
+    )
+    print(new_product.name)
+    print(new_product.description)
+    print(new_product.price)
+    print(new_product.quantity)
+
+    new_product.price = 800
+    print(new_product.price)
+
+    new_product.price = -100
+    print(new_product.price)
+    new_product.price = 0
+    print(new_product.price)
+
+    # === ПРОВЕРКА ЗАГРУЗКИ ИЗ JSON ===
     print("\n--- Проверка загрузки из JSON ---")
 
-    # Сбрасываем счетчики для чистоты проверки
     Category.category_count = 0
     Category.product_count = 0
 
-    # Вызываем функцию.
     json_categories = load_data_from_json("products.json")
 
-    for cat in json_categories:
-        print("Загружена категория:", cat.name, "товаров:", len(cat.products))
-
-    print("Итого категорий из JSON:", Category.category_count)
-    print("Итого товаров из JSON:", Category.product_count)
-    json_categories = load_data_from_json("products.json")
-
-    # Минимальный вывод, подтверждающий, что объекты созданы
     for cat in json_categories:
         print("Загружена категория:", cat.name, "товаров:", len(cat.products))
 
