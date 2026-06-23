@@ -330,3 +330,114 @@ def test_class_counters_with_fixtures(sample_category: Category, sample_products
     """Проверка счетчиков с использованием фикстур."""
     assert Category.category_count == 1
     assert Category.product_count == len(sample_products_list)
+
+
+# ==========================================
+# ТЕСТЫ ДЛЯ __str__ Product
+# ==========================================
+
+
+def test_product_str_basic() -> None:
+    """Проверка строкового представления продукта."""
+    product = Product("Phone", "Desc", 100.0, 5)
+    assert str(product) == "Phone, 100.0 руб. Остаток: 5 шт."
+
+
+def test_product_str_with_fixture(sample_product: Product) -> None:
+    """Проверка __str__ на продукте из фикстуры."""
+    assert str(sample_product) == "Test Phone, 50000.0 руб. Остаток: 10 шт."
+
+
+def test_product_str_zero_quantity() -> None:
+    """Проверка __str__ при нулевом остатке."""
+    product = Product("Empty", "Desc", 50.0, 0)
+    assert str(product) == "Empty, 50.0 руб. Остаток: 0 шт."
+
+
+# ==========================================
+# ТЕСТЫ ДЛЯ __str__ Category
+# ==========================================
+
+
+def test_category_str_basic() -> None:
+    """Проверка строкового представления категории."""
+    p1 = Product("Phone1", "Desc1", 100.0, 5)
+    p2 = Product("Phone2", "Desc2", 200.0, 3)
+    category = Category("Smartphones", "Desc", [p1, p2])
+    # 5 + 3 = 8
+    assert str(category) == "Smartphones, количество продуктов: 8 шт."
+
+
+def test_category_str_empty() -> None:
+    """Проверка __str__ для пустой категории."""
+    category = Category("Empty", "Desc", [])
+    assert str(category) == "Empty, количество продуктов: 0 шт."
+
+
+def test_category_str_with_fixture(sample_category: Category) -> None:
+    """Проверка __str__ на категории из фикстуры (5 + 8 + 12 = 25)."""
+    assert str(sample_category) == "Smartphones, количество продуктов: 25 шт."
+
+
+def test_category_str_single_product() -> None:
+    """Проверка __str__ для категории с одним товаром."""
+    p = Product("Laptop", "Desc", 1000.0, 2)
+    category = Category("Tech", "Desc", [p])
+    assert str(category) == "Tech, количество продуктов: 2 шт."
+
+
+# ==========================================
+# ТЕСТЫ ДЛЯ __add__ Product
+# ==========================================
+
+
+def test_product_add_basic() -> None:
+    """Проверка сложения двух продуктов (пример из задания)."""
+    a = Product("a", "Desc", 100.0, 10)
+    b = Product("b", "Desc", 200.0, 2)
+    # 100 * 10 + 200 * 2 = 1400
+    assert a + b == 1400.0
+
+
+def test_product_add_with_fixture(sample_product: Product) -> None:
+    """Проверка сложения с продуктом из фикстуры."""
+    p2 = Product("Phone2", "Desc", 200.0, 5)
+    # sample_product: 50000.0 * 10 = 500000.0
+    # p2: 200.0 * 5 = 1000.0
+    assert sample_product + p2 == 501000.0
+
+
+def test_product_add_commutative() -> None:
+    """Сложение должно быть коммутативным."""
+    p1 = Product("P1", "D1", 100.0, 5)
+    p2 = Product("P2", "D2", 200.0, 3)
+    assert p1 + p2 == p2 + p1
+
+
+def test_product_add_zero_quantity() -> None:
+    """Сложение с товаром нулевого остатка."""
+    p1 = Product("P1", "D1", 100.0, 5)
+    p2 = Product("P2", "D2", 200.0, 0)
+    # 100 * 5 + 200 * 0 = 500
+    assert p1 + p2 == 500.0
+
+
+def test_product_add_type_error() -> None:
+    """Сложение с не-Product должно вызывать TypeError."""
+    p1 = Product("P1", "D1", 100.0, 5)
+    with pytest.raises(TypeError):
+        _ = p1 + 100  # type: ignore[operator]
+
+    with pytest.raises(TypeError):
+        _ = p1 + "string"  # type: ignore[operator]
+
+    with pytest.raises(TypeError):
+        _ = p1 + None  # type: ignore[operator]
+
+
+def test_product_add_returns_float() -> None:
+    """Результат сложения должен быть числом (float)."""
+    p1 = Product("P1", "D1", 100.0, 5)
+    p2 = Product("P2", "D2", 200.0, 3)
+    result = p1 + p2
+    assert isinstance(result, (int, float))

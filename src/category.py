@@ -22,6 +22,14 @@ class Category:
         Category.category_count += 1
         Category.product_count += len(self.__products)
 
+    def __str__(self) -> str:
+        """
+        Строковое представление категории.
+        Количество продуктов считается как сумма quantity всех товаров на складе.
+        """
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
     def add_product(self, product: Product) -> None:
         """Добавляет продукт в категорию и увеличивает счетчик товаров."""
         self.__products.append(product)
@@ -29,8 +37,11 @@ class Category:
 
     @property
     def products(self) -> str:
-        """Геттер, возвращающий строку со списком товаров в заданном формате."""
+        """
+        Геттер, возвращающий строку со списком товаров в заданном формате.
+        Использует __str__ объекта Product для формирования строки.
+        """
         result = ""
         for product in self.__products:
-            result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
+            result += f"{product}\n"
         return result
