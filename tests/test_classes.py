@@ -441,3 +441,76 @@ def test_product_add_returns_float() -> None:
     p2 = Product("P2", "D2", 200.0, 3)
     result = p1 + p2
     assert isinstance(result, (int, float))
+
+
+# ==========================================
+# ТЕСТЫ ДЛЯ add_product С ПРОВЕРКОЙ ТИПА
+# ==========================================
+
+
+def test_category_add_product_non_product_raises() -> None:
+    """Метод add_product должен выбрасывать TypeError при добавлении не-Product."""
+    category = Category("Test", "Desc", [])
+
+    with pytest.raises(TypeError):
+        category.add_product("Not a product")  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError):
+        category.add_product(123)  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError):
+        category.add_product(None)  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError):
+        category.add_product([1, 2, 3])  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError):
+        category.add_product({"name": "test"})  # type: ignore[arg-type]
+
+
+def test_category_add_product_accepts_subclasses() -> None:
+    """Метод add_product должен принимать объекты наследников Product."""
+    from src.lawn_grass import LawnGrass
+    from src.smartphone import Smartphone
+
+    category = Category("Mixed", "Desc", [])
+    smartphone = Smartphone("S1", "D", 100.0, 5, 90.0, "M1", 128, "Black")
+    grass = LawnGrass("G1", "D", 500.0, 20, "RU", "7", "Green")
+
+    category.add_product(smartphone)
+    category.add_product(grass)
+
+    assert smartphone in category._Category__products  # type: ignore[attr-defined]
+    assert grass in category._Category__products  # type: ignore[attr-defined]
+    assert Category.product_count == 2
+
+
+def test_product_add_with_different_subclasses_raises() -> None:
+    """Сложение объектов разных классов-наследников должно выбрасывать TypeError."""
+    from src.lawn_grass import LawnGrass
+    from src.smartphone import Smartphone
+
+    smartphone = Smartphone("S1", "D", 100.0, 5, 90.0, "M1", 128, "Black")
+    grass = LawnGrass("G1", "D", 500.0, 20, "RU", "7", "Green")
+
+    with pytest.raises(TypeError):
+        _ = smartphone + grass  # type: ignore[operator]
+
+    with pytest.raises(TypeError):
+        _ = grass + smartphone  # type: ignore[operator]
+
+
+def test_product_add_same_class_works() -> None:
+    """Сложение объектов одного класса должно работать."""
+    from src.lawn_grass import LawnGrass
+    from src.smartphone import Smartphone
+
+    s1 = Smartphone("S1", "D", 100.0, 5, 90.0, "M1", 128, "Black")
+    s2 = Smartphone("S2", "D", 200.0, 3, 95.0, "M2", 256, "White")
+    # 100*5 + 200*3 = 1100
+    assert s1 + s2 == 1100.0
+
+    g1 = LawnGrass("G1", "D", 500.0, 20, "RU", "7", "Green")
+    g2 = LawnGrass("G2", "D", 450.0, 15, "US", "5", "DarkGreen")
+    # 500*20 + 450*15 = 16750
+    assert g1 + g2 == 16750.0
