@@ -30,8 +30,17 @@ class Category:
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
 
-    def add_product(self, product: Product) -> None:
-        """Добавляет продукт в категорию и увеличивает счетчик товаров."""
+    def add_product(self, product: object) -> None:
+        """
+        Добавляет продукт в категорию и увеличивает счетчик товаров.
+        Принимает только объекты класса Product или его наследников.
+        Используется функция isinstance() для проверки типа.
+        """
+        if not isinstance(product, Product):
+            raise TypeError(
+                f"Можно добавлять только объекты класса Product или его наследников, "
+                f"получен объект типа {type(product).__name__}"
+            )
         self.__products.append(product)
         Category.product_count += 1
 

@@ -23,9 +23,16 @@ class Product:
         """
         Сложение двух продуктов.
         Возвращает сумму произведений цены на количество у двух объектов.
+        Разрешено складывать только объекты одного и того же класса
+        (используется функция type()).
         """
+        if type(self) is not type(other):
+            raise TypeError(
+                f"Нельзя складывать товары разных классов: " f"{type(self).__name__} и {type(other).__name__}"
+            )
+        # Дополнительная страховка: other должен быть Product (для mypy)
         if not isinstance(other, Product):
-            raise TypeError("Можно складывать только объекты класса Product")
+            raise TypeError("Можно складывать только объекты класса Product или его наследников")
         return self.price * self.quantity + other.price * other.quantity
 
     @property
