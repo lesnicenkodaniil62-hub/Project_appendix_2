@@ -1,6 +1,9 @@
+from src.base_product import BaseProduct
+from src.base_store_item import BaseStoreItem
 from src.category import Category
 from src.category_iterator import CategoryIterator
 from src.lawn_grass import LawnGrass
+from src.order import Order
 from src.product import Product
 from src.smartphone import Smartphone
 from src.utils import load_data_from_json
@@ -274,3 +277,48 @@ if __name__ == "__main__":
 
     print("Итого категорий из JSON:", Category.category_count)
     print("Итого товаров из JSON:", Category.product_count)
+
+    # ==========================================
+    # === НОВЫЕ ДАННЫЕ (feature 5: абстрактные классы и миксин) ===
+    # ==========================================
+    print("\n" + "=" * 60)
+    print("FEATURE 5: абстрактные классы и миксин")
+    print("=" * 60)
+
+    print("\n--- Создание продуктов (демонстрация миксина) ---")
+    product_mixin_1 = Product("Test Product 1", "Description 1", 100.0, 5)
+    product_mixin_2 = Product("Test Product 2", "Description 2", 200.0, 10)
+
+    print(f"\nproduct_mixin_1 является экземпляром BaseProduct: {isinstance(product_mixin_1, BaseProduct)}")
+    print(f"smartphone1 является экземпляром BaseProduct: {isinstance(smartphone1, BaseProduct)}")
+    print(f"grass1 является экземпляром BaseProduct: {isinstance(grass1, BaseProduct)}")
+
+    # ==========================================
+    # === НОВЫЕ ДАННЫЕ (feature 6: класс Order) ===
+    # ==========================================
+    print("\n" + "=" * 60)
+    print("FEATURE 6: класс Order")
+    print("=" * 60)
+
+    order1 = Order(product_mixin_1, 3)
+    order2 = Order(smartphone1, 2)
+    order3 = Order(grass1, 10)
+
+    print("\n--- Информация о заказах ---")
+    print(f"Заказ 1: {order1}")
+    print(f"Заказ 2: {order2}")
+    print(f"Заказ 3: {order3}")
+
+    print(f"\nИтоговая стоимость заказа 1: {order1.total_cost} руб.")
+    print(f"Итоговая стоимость заказа 2: {order2.total_cost} руб.")
+    print(f"Итоговая стоимость заказа 3: {order3.total_cost} руб.")
+
+    print(f"\norder1 является экземпляром BaseStoreItem: {isinstance(order1, BaseStoreItem)}")
+    print(f"category1 является экземпляром BaseStoreItem: {isinstance(category1, BaseStoreItem)}")
+
+    print("\n--- Попытка создать заказ с некорректным количеством ---")
+    try:
+        invalid_order = Order(product_mixin_1, 0)
+        print(f"Не возникла ошибка ValueError: {invalid_order}")
+    except ValueError as e:
+        print(f"Возникла ошибка ValueError: {e}")

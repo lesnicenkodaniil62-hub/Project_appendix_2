@@ -1,7 +1,10 @@
 from typing import Any, Dict, List, Optional
 
+from src.base_product import BaseProduct
+from src.mixin import BasePrintMixin
 
-class Product:
+
+class Product(BasePrintMixin, BaseProduct):
     """Класс для представления продукта."""
 
     name: str
@@ -10,9 +13,10 @@ class Product:
     quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+        super().__init__(name, description, price, quantity)
         self.name = name
         self.description = description
-        self.__price = price  # используем приватный атрибут
+        self.__price = price
         self.quantity = quantity
 
     def __str__(self) -> str:
@@ -23,14 +27,12 @@ class Product:
         """
         Сложение двух продуктов.
         Возвращает сумму произведений цены на количество у двух объектов.
-        Разрешено складывать только объекты одного и того же класса
-        (используется функция type()).
+        Разрешено складывать только объекты одного и того же класса.
         """
         if type(self) is not type(other):
             raise TypeError(
                 f"Нельзя складывать товары разных классов: " f"{type(self).__name__} и {type(other).__name__}"
             )
-        # Дополнительная страховка: other должен быть Product (для mypy)
         if not isinstance(other, Product):
             raise TypeError("Можно складывать только объекты класса Product или его наследников")
         return self.price * self.quantity + other.price * other.quantity
@@ -47,7 +49,6 @@ class Product:
             print("Цена не должна быть нулевая или отрицательная")
             return
 
-        # Дополнительное задание: подтверждение при понижении цены
         if new_price < self.__price:
             answer = input(f"Цена понижается с {self.__price} до {new_price}. Подтвердить? (y/n): ")
             if answer.lower() != "y":
@@ -61,18 +62,14 @@ class Product:
         Класс-метод для создания продукта из словаря.
         Дополнительно проверяет наличие дубликатов по имени в products_list.
         """
-        # Дополнительное задание: проверка на дубликаты
         if products_list is not None:
             for product in products_list:
                 if product.name == product_dict["name"]:
-                    # Товар уже существует - складываем количество
                     product.quantity += product_dict["quantity"]
-                    # При конфликте цен выбираем более высокую
                     if product_dict["price"] > product.price:
                         product.price = product_dict["price"]
                     return product
 
-        # Создаем новый продукт
         return cls(
             name=product_dict["name"],
             description=product_dict["description"],
