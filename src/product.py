@@ -13,6 +13,9 @@ class Product(BasePrintMixin, BaseProduct):
     quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+        # Задание 1: проверка нулевого количества
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         super().__init__(name, description, price, quantity)
         self.name = name
         self.description = description

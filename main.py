@@ -2,6 +2,7 @@ from src.base_product import BaseProduct
 from src.base_store_item import BaseStoreItem
 from src.category import Category
 from src.category_iterator import CategoryIterator
+from src.exceptions import ZeroQuantityError
 from src.lawn_grass import LawnGrass
 from src.order import Order
 from src.product import Product
@@ -320,5 +321,47 @@ if __name__ == "__main__":
     try:
         invalid_order = Order(product_mixin_1, 0)
         print(f"Не возникла ошибка ValueError: {invalid_order}")
+    except ZeroQuantityError as e:
+        print(f"Возникла ошибка ZeroQuantityError: {e}")
+
+    # =====================================================================
+    # === НОВЫЕ ДАННЫЕ (feature 7: нулевое количество и средний ценник) ===
+    # =====================================================================
+    print("\n" + "=" * 60)
+    print("FEATURE 7: обработка нулевого количества и средний ценник")
+    print("=" * 60)
+
+    print("\n--- Попытка создать продукт с нулевым количеством ---")
+    try:
+        product_invalid = Product("Бракованный товар", "Неверное количество", 1000.0, 0)
     except ValueError as e:
-        print(f"Возникла ошибка ValueError: {e}")
+        print(
+            f"Возникла ошибка ValueError прерывающая работу программы "
+            f"при попытке добавить продукт с нулевым количеством: {e}"
+        )
+    else:
+        print("Не возникла ошибка ValueError при попытке добавить продукт с нулевым количеством")
+
+    product_new1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
+    product_new2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    product_new3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
+
+    category_new1 = Category("Смартфоны", "Категория смартфонов", [product_new1, product_new2, product_new3])
+
+    print("\n--- Подсчёт среднего ценника ---")
+    print(f"Средний ценник категории 'Смартфоны': {category_new1.middle_price()}")
+
+    category_empty = Category("Пустая категория", "Категория без продуктов", [])
+    print(f"Средний ценник пустой категории: {category_empty.middle_price()}")
+
+    print("\n--- Попытка добавить товар с нулевым количеством в категорию ---")
+    product_zero = Product("Временный товар", "Desc", 100.0, 1)
+    product_zero.quantity = 0  # намеренно обходим проверку __init__
+    category_new1.add_product(product_zero)
+
+    print("\n--- Попытка создать заказ с нулевым количеством ---")
+    try:
+        invalid_order = Order(product_new1, 0)
+        print(f"Не возникла ошибка ZeroQuantityError: {invalid_order}")
+    except ZeroQuantityError as e:
+        print(f"Возникла ошибка ZeroQuantityError: {e}")
