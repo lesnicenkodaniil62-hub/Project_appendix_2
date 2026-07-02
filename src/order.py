@@ -1,4 +1,5 @@
 from src.base_store_item import BaseStoreItem
+from src.exceptions import ZeroQuantityError
 from src.product import Product
 
 
@@ -20,15 +21,26 @@ class Order(BaseStoreItem):
 
         :param product: Товар, который был куплен.
         :param quantity: Количество купленного товара.
-        :raises ValueError: Если количество меньше или равно нулю.
+        :raises ZeroQuantityError: Если количество равно нулю.
+        :raises ValueError: Если количество отрицательное.
         """
-        if quantity <= 0:
-            raise ValueError("Количество товара в заказе должно быть положительным")
+        try:
+            if quantity == 0:
+                raise ZeroQuantityError("Товар с нулевым количеством не может быть добавлен в заказ")
+            if quantity < 0:
+                raise ValueError("Количество товара в заказе должно быть положительным")
 
-        self.product = product
-        self.quantity = quantity
-        self.name = f"Заказ {product.name}"
-        self.description = f"Заказ товара {product.name}"
+            self.product = product
+            self.quantity = quantity
+            self.name = f"Заказ {product.name}"
+            self.description = f"Заказ товара {product.name}"
+        except ZeroQuantityError as e:
+            print(f"Ошибка: {e}")
+            raise
+        else:
+            print(f"Заказ товара '{product.name}' успешно создан")
+        finally:
+            print("Обработка создания заказа завершена")
 
     @property
     def total_cost(self) -> float:
@@ -42,4 +54,4 @@ class Order(BaseStoreItem):
         """
         Строковое представление заказа.
         """
-        return f"{self.name}: {self.quantity} шт. x {self.product.price} руб. " f"= {self.total_cost} руб."
+        return f"{self.name}: {self.quantity} шт. x {self.product.price} руб. = {self.total_cost} руб."

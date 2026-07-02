@@ -18,7 +18,6 @@ from src.product import Product
         ("Samsung Galaxy S23", "256GB, Gray", 180000.0, 5),
         ("Iphone 15", "512GB, Space Gray", 210000.0, 8),
         ("Xiaomi Redmi", "1024GB, Blue", 31000.0, 14),
-        ("Тестовый товар", "Описание", 0.0, 0),
     ],
 )
 def test_product_initialization_parametrized(name: str, description: str, price: float, quantity: int) -> None:
@@ -39,6 +38,13 @@ def test_product_fixture_attributes(sample_product: Product) -> None:
     assert sample_product.description == "Great phone"
     assert sample_product.price == 50000.0
     assert sample_product.quantity == 10
+
+
+def test_product_init_zero_quantity_raises() -> None:
+    """Product с quantity=0 должен выбрасывать ValueError."""
+    with pytest.raises(ValueError) as exc_info:
+        Product("Тестовый товар", "Описание", 0.0, 0)
+    assert "Товар с нулевым количеством не может быть добавлен" in str(exc_info.value)
 
 
 # ==========================================
@@ -348,10 +354,10 @@ def test_product_str_with_fixture(sample_product: Product) -> None:
     assert str(sample_product) == "Test Phone, 50000.0 руб. Остаток: 10 шт."
 
 
-def test_product_str_zero_quantity() -> None:
-    """Проверка __str__ при нулевом остатке."""
-    product = Product("Empty", "Desc", 50.0, 0)
-    assert str(product) == "Empty, 50.0 руб. Остаток: 0 шт."
+def test_product_str_small_quantity() -> None:
+    """Проверка __str__ при малом положительном остатке."""
+    product = Product("Empty", "Desc", 50.0, 1)
+    assert str(product) == "Empty, 50.0 руб. Остаток: 1 шт."
 
 
 # ==========================================
@@ -414,12 +420,12 @@ def test_product_add_commutative() -> None:
     assert p1 + p2 == p2 + p1
 
 
-def test_product_add_zero_quantity() -> None:
-    """Сложение с товаром нулевого остатка."""
+def test_product_add_small_quantity() -> None:
+    """Сложение с товаром малого остатка."""
     p1 = Product("P1", "D1", 100.0, 5)
-    p2 = Product("P2", "D2", 200.0, 0)
-    # 100 * 5 + 200 * 0 = 500
-    assert p1 + p2 == 500.0
+    p2 = Product("P2", "D2", 200.0, 1)
+    # 100 * 5 + 200 * 1 = 700
+    assert p1 + p2 == 700.0
 
 
 def test_product_add_type_error() -> None:

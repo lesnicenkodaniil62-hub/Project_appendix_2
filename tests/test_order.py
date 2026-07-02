@@ -2,6 +2,7 @@ import pytest
 
 from src.base_store_item import BaseStoreItem
 from src.category import Category
+from src.exceptions import ZeroQuantityError
 from src.order import Order
 from src.product import Product
 
@@ -24,9 +25,9 @@ def test_order_total_cost() -> None:
 
 
 def test_order_zero_quantity_raises() -> None:
-    """Заказ с нулевым количеством должен выбрасывать ValueError."""
+    """Заказ с нулевым количеством должен выбрасывать ZeroQuantityError."""
     product = Product("Test", "Desc", 100.0, 5)
-    with pytest.raises(ValueError):
+    with pytest.raises(ZeroQuantityError):
         Order(product, 0)
 
 
